@@ -587,7 +587,7 @@ typedef struct AVFrame {
      * Must not be used to transfer data between libraries.
      * Has to be NULL when ownership of the frame leaves the respective library.
      *
-     * Code outside the FFmpeg libs should never check or change the contents of the buffer ref.
+     * Code outside the FFmpeg rtmp.libs should never check or change the contents of the buffer ref.
      *
      * FFmpeg calls av_buffer_unref() on it when the frame is unreferenced.
      * av_frame_copy_props() calls create a new reference with av_buffer_ref()

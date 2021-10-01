@@ -2,17 +2,17 @@ package com.xl.ffmpeg;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.fonts.FontFamily;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.xl.ffmpeg.databinding.ActivityMainBinding;
+import com.xl.ffmpeg.play.FFmpegPlay;
+import com.xl.ffmpeg.play.OnPerpareListener;
 
 public class MainActivity extends AppCompatActivity {
-
-    // Used to load the 'ffmpeg' library on application startup.
-    static {
-        System.loadLibrary("ffmpeg");
-    }
 
     private ActivityMainBinding binding;
 
@@ -22,15 +22,45 @@ public class MainActivity extends AppCompatActivity {
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        FFmpegPlay play = new FFmpegPlay(new OnPerpareListener() {
+            @Override
+            public void onPrepare() {
+                showMsg("准备成功");
 
-        // Example of a call to a native method
-        TextView tv = binding.sampleText;
-        tv.setText(stringFromJNI());
+            }
+
+            @Override
+            public void start() {
+                showMsg("开始播放");
+            }
+
+            @Override
+            public void onError(String msg) {
+                showMsg(msg);
+            }
+
+            @Override
+            public void stop() {
+                showMsg("播放停止");
+
+            }
+
+            @Override
+            public void release() {
+                showMsg("释放资源");
+            }
+        });
+
+        String path = "data/data/com.xl.ffmpeg/demo.mp4";
+        play.setDataSource(path);
+        binding.btnStartPlay.setOnClickListener(view -> {
+            play.prepare();
+        });
     }
 
-    /**
-     * A native method that is implemented by the 'ffmpeg' native library,
-     * which is packaged with this application.
-     */
-    public native String stringFromJNI();
+    public void showMsg(String msg) {
+        runOnUiThread(() -> Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show());
+    }
+
+
 }
