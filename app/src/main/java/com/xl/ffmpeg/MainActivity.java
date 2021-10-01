@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        String path = "data/data/com.xl.ffmpeg/demo.mp4";
+        String path = "data/data/com.xl.ffmpeg/demo.mp";
         play.setDataSource(path);
         binding.btnStartPlay.setOnClickListener(view -> {
             play.prepare();
@@ -61,6 +61,5 @@ public class MainActivity extends AppCompatActivity {
     public void showMsg(String msg) {
         runOnUiThread(() -> Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show());
     }
-
 
 }

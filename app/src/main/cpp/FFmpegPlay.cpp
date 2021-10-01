@@ -60,7 +60,8 @@ void FFmpegPlay::prepare_() {
     if (r) {
 //      失败的情况，把错误信息回调给java
         if (helper) {
-            helper->onError(THREAD_CHILD, "打开媒体文件失败");
+            char *contant = "打开媒体失败";
+            helper->onError(THREAD_CHILD, contant);
         }
         return;
     }

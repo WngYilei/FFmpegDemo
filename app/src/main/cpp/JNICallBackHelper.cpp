@@ -28,7 +28,6 @@ JNICallBackHelper::~JNICallBackHelper() {
 }
 
 void JNICallBackHelper::onPrepare(int thread_model) {
-    LOGE("JNICallBackHelper===onPrepare");
     if (thread_model == THREAD_MAIN) {
         env->CallVoidMethod(job, methodPrepare);
     } else if (thread_model == THREAD_CHILD) {
@@ -41,14 +40,15 @@ void JNICallBackHelper::onPrepare(int thread_model) {
 }
 
 void JNICallBackHelper::onError(int thread_model, const char *string) {
-    jstring msg = env->NewStringUTF(string);
 
     if (thread_model == THREAD_MAIN) {
+        jstring msg = env->NewStringUTF(string);
         env->CallVoidMethod(job, methodPrepare, msg);
     } else if (thread_model == THREAD_CHILD) {
-//   子线程，env 不能 跨线程 ，需要全新的env
+//      子线程，env 不能 跨线程 ，需要全新的env
         JNIEnv *envChild;
         vm->AttachCurrentThread(&envChild, 0);
+        jstring msg = envChild->NewStringUTF(string);
         envChild->CallVoidMethod(job, methodError, msg);
         vm->DetachCurrentThread();
     }
