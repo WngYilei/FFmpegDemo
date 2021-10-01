@@ -19,11 +19,8 @@ FFmpegPlay::FFmpegPlay(const char *date_source, JNICallBackHelper *pHelper) {
 
 
 FFmpegPlay::~FFmpegPlay() {
-    if (date_source) {
-        delete date_source;
-    }
-    if (helper)
-        delete helper;
+    delete date_source;
+    delete helper;
 }
 
 
@@ -34,16 +31,16 @@ void *task_prepeare(void *args) {
 //    avformat_open_input(0,this-)
     auto *player = static_cast<FFmpegPlay *>(args);
     player->prepare_();
-    return 0;//必须返回
+    return nullptr;//必须返回
 }
 
 //此函数是子线程
 // prepare 传对象给 子线程
 void FFmpegPlay::prepare_() {
-    int r = 0;
+    int r;
     //  ffmpeg 大量使用上下文 ，因为ffmpeg是纯C的,使用上下文,是为了贯穿环境,就相当于java 的this
     formatContext = avformat_alloc_context();//存在内存泄露问题，以后专门处理
-    AVDictionary *avDictionary = 0;
+    AVDictionary *avDictionary = nullptr;
     av_dict_set(&avDictionary, "timeout", "500000", 0);
 
 /**
@@ -53,7 +50,7 @@ void FFmpegPlay::prepare_() {
  * 3.AVInputFormat  打开 mac win 摄像头 麦克风
  * 4.各种设置，例如连接超时，打开rtmp超时时间
  * */
-    r = avformat_open_input(&formatContext, date_source, 0, &avDictionary);
+    r = avformat_open_input(&formatContext, date_source, nullptr, &avDictionary);
 //  释放字典
     av_dict_free(&avDictionary);
 
@@ -70,7 +67,7 @@ void FFmpegPlay::prepare_() {
  * 第二步 查找媒体流 的音视频信息
  * 1上下文
  * */
-    r = avformat_find_stream_info(formatContext, 0);
+    r = avformat_find_stream_info(formatContext, nullptr);
     if (r < 0) {
 //      检查失败
         if (helper) {
@@ -113,7 +110,7 @@ void FFmpegPlay::prepare_() {
         }
 
 //      九 打开解码器
-        r = avcodec_open2(avCodecContexta, avCodec, 0);
+        r = avcodec_open2(avCodecContexta, avCodec, nullptr);
         if (r) {
             if (helper) {
                 helper->onError(THREAD_CHILD, "打开编码器失败");
@@ -148,6 +145,6 @@ void FFmpegPlay::prepare_() {
 void FFmpegPlay::prepare() {
 //  此函数是在主线程调用
 // 解封装 FFmpeg来解析，data_source == 文件IO流，网络rtmp，会耗时，所以必须用子线程
-    pthread_create(&pid_prepare, 0, task_prepeare, this);
+    pthread_create(&pid_prepare, nullptr, task_prepeare, this);
 }
 

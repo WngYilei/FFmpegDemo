@@ -1,8 +1,4 @@
 #include "AudioChannel.h"
 
-AudioChannel::AudioChannel() {
-
-}
-AudioChannel::~AudioChannel() {
-
-}
+AudioChannel::AudioChannel() = default;
+AudioChannel::~AudioChannel() = default;

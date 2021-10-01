@@ -1,26 +1,19 @@
 package com.xl.ffmpeg;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.graphics.fonts.FontFamily;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
-
 import com.xl.ffmpeg.databinding.ActivityMainBinding;
 import com.xl.ffmpeg.play.FFmpegPlay;
 import com.xl.ffmpeg.play.OnPerpareListener;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ActivityMainBinding binding;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         FFmpegPlay play = new FFmpegPlay(new OnPerpareListener() {
             @Override
@@ -53,9 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
         String path = "data/data/com.xl.ffmpeg/demo.mp";
         play.setDataSource(path);
-        binding.btnStartPlay.setOnClickListener(view -> {
-            play.prepare();
-        });
+        binding.btnStartPlay.setOnClickListener(view -> play.prepare());
     }
 
     public void showMsg(String msg) {

@@ -6,7 +6,7 @@ public class FFmpegPlay {
         System.loadLibrary("ffmpeg");
     }
 
-    private OnPerpareListener listener;
+    private final OnPerpareListener listener;
 
     public FFmpegPlay(OnPerpareListener listener) {
         this.listener = listener;

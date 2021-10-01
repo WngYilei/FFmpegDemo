@@ -1,8 +1,4 @@
 #include "VideoChannel.h"
 
-VideoChannel::VideoChannel() {
-
-}
-VideoChannel::~VideoChannel() {
-
-}
+VideoChannel::VideoChannel() = default;
+VideoChannel::~VideoChannel() = default;

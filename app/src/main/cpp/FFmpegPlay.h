@@ -21,7 +21,7 @@ class FFmpegPlay {
 private:
 //  指针请赋初始值，防止地址乱指
     char *date_source = 0;
-    pthread_t pid_prepare;
+    pthread_t pid_prepare{};
     AVFormatContext *formatContext = 0;
     AudioChannel *audio_channel = 0;
     VideoChannel *video_channel = 0;

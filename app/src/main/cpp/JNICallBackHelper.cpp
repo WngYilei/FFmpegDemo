@@ -1,9 +1,7 @@
 #include "JNICallBackHelper.h"
 #include "util.h"
 
-JNICallBackHelper::JNICallBackHelper() {
-
-}
+JNICallBackHelper::JNICallBackHelper() = default;
 
 JNICallBackHelper::JNICallBackHelper(JavaVM *pVm, JNIEnv *env, jobject job) {
     this->env = env;
@@ -20,10 +18,10 @@ JNICallBackHelper::JNICallBackHelper(JavaVM *pVm, JNIEnv *env, jobject job) {
 }
 
 JNICallBackHelper::~JNICallBackHelper() {
-    vm = 0;
+    vm = nullptr;
     env->DeleteGlobalRef(job);
-    job = 0;
-    env = 0;
+    job = nullptr;
+    env = nullptr;
 
 }
 
@@ -33,7 +31,7 @@ void JNICallBackHelper::onPrepare(int thread_model) {
     } else if (thread_model == THREAD_CHILD) {
 //   子线程，env 不能 跨线程 ，需要全新的env
         JNIEnv *envChild;
-        vm->AttachCurrentThread(&envChild, 0);
+        vm->AttachCurrentThread(&envChild, nullptr);
         envChild->CallVoidMethod(job, methodPrepare);
         vm->DetachCurrentThread();
     }
@@ -47,7 +45,7 @@ void JNICallBackHelper::onError(int thread_model, const char *string) {
     } else if (thread_model == THREAD_CHILD) {
 //      子线程，env 不能 跨线程 ，需要全新的env
         JNIEnv *envChild;
-        vm->AttachCurrentThread(&envChild, 0);
+        vm->AttachCurrentThread(&envChild, nullptr);
         jstring msg = envChild->NewStringUTF(string);
         envChild->CallVoidMethod(job, methodError, msg);
         vm->DetachCurrentThread();
