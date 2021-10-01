@@ -14,8 +14,8 @@ Java_com_xl_ffmpeg_play_FFmpegPlay_stringFromJNI(JNIEnv *env, jobject thiz) {
     hello.append(av_version_info());
     return env->NewStringUTF(hello.c_str());
 }
-JavaVM *vm = 0;
 
+JavaVM *vm = 0;
 jint JNI_OnLoad(JavaVM *vm, void *arfs) {
     ::vm = vm;
     return JNI_VERSION_1_6;

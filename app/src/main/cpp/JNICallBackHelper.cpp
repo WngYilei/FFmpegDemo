@@ -1,7 +1,3 @@
-//
-// Created by 王一蕾 on 2021/10/1.
-//
-
 #include "JNICallBackHelper.h"
 #include "util.h"
 
