@@ -57,7 +57,7 @@ void FFmpegPlay::prepare_() {
     if (r) {
 //      失败的情况，把错误信息回调给java
         if (helper) {
-            char *contant = "打开媒体失败";
+            char *contant = av_err2str(r);
             helper->onError(THREAD_CHILD, contant);
         }
         return;
@@ -71,7 +71,8 @@ void FFmpegPlay::prepare_() {
     if (r < 0) {
 //      检查失败
         if (helper) {
-            helper->onError(THREAD_CHILD, "验证媒体文件失败");
+            char *contant = av_err2str(r);
+            helper->onError(THREAD_CHILD, contant);
         }
         return;
     }
@@ -94,7 +95,8 @@ void FFmpegPlay::prepare_() {
         if (!avCodecContexta) {
 //          获取失败
             if (helper) {
-                helper->onError(THREAD_CHILD, "获取编码器失败");
+                char *contant = av_err2str(r);
+                helper->onError(THREAD_CHILD, contant);
             }
             return;
         }
@@ -104,7 +106,8 @@ void FFmpegPlay::prepare_() {
         if (r < 0) {
 //          失败
             if (helper) {
-                helper->onError(THREAD_CHILD, "编码器初始化失败");
+                char *contant = av_err2str(r);
+                helper->onError(THREAD_CHILD, contant);
             }
             return;
         }
@@ -113,16 +116,17 @@ void FFmpegPlay::prepare_() {
         r = avcodec_open2(avCodecContexta, avCodec, nullptr);
         if (r) {
             if (helper) {
-                helper->onError(THREAD_CHILD, "打开编码器失败");
+                char *contant = av_err2str(r);
+                helper->onError(THREAD_CHILD, contant);
             }
             return;
         }
-
 //      十 从编解码器中 获取流的类型 ，codec_type  是音频 还是视频
         if (parameters->codec_type == AVMediaType::AVMEDIA_TYPE_AUDIO) {
-            audio_channel = new AudioChannel();
+//            audio_channel = new AudioChannel();
         } else if (parameters->codec_type == AVMEDIA_TYPE_VIDEO) {
-            video_channel = new VideoChannel();
+            video_channel = new VideoChannel(0, avCodecContexta);
+            video_channel->setRenderCallback(renderCallback);
         }
     }
 
@@ -148,3 +152,50 @@ void FFmpegPlay::prepare() {
     pthread_create(&pid_prepare, nullptr, task_prepeare, this);
 }
 
+// void* (*__start_routine)(void*)  函数指针
+//此函数和 play 对象没有关系 ，没办法获取 play对象的私有
+void *task_start(void *args) {
+
+//    avformat_open_input(0,this-)
+    auto *player = static_cast<FFmpegPlay *>(args);
+    player->start_();
+    return nullptr;//必须返回
+}
+
+void FFmpegPlay::start() {
+    isPlay = 1;
+    if (video_channel) {
+        video_channel->start();
+    }
+    pthread_create(&pid_start, nullptr, task_start, this);
+}
+
+void FFmpegPlay::start_() {
+    while (isPlay) {
+        AVPacket *avPacket = av_packet_alloc();
+        int ret = av_read_frame(formatContext, avPacket);
+        if (!ret) {
+            if (video_channel && video_channel->stream_index == avPacket->stream_index) {
+//            代表是视频
+                video_channel->packes.insertToQueue(avPacket);
+            } else if (audio_channel && audio_channel->stream_index == avPacket->stream_index) {
+//             代表是音频
+//                audio_channel->packes.insertToQueue(avPacket);
+            }
+        } else if (ret == AVERROR_EOF) {
+//          代表读完了
+
+        } else {
+//         报错了
+            break;
+        }
+    }
+    isPlay = 0;
+    video_channel->stop();
+    audio_channel->stop();
+
+}
+
+void FFmpegPlay::setRenderCallback(RenderCallback renderCallback) {
+    this->renderCallback = renderCallback;
+}

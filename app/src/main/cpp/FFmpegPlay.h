@@ -26,6 +26,9 @@ private:
     AudioChannel *audio_channel = 0;
     VideoChannel *video_channel = 0;
     JNICallBackHelper *helper = 0;
+    bool isPlay = false;
+    pthread_t pid_start{};
+    RenderCallback renderCallback;
 public:
     FFmpegPlay(const char *date_source, JNICallBackHelper *pHelper);
 
@@ -34,6 +37,12 @@ public:
     void prepare();
 
     void prepare_();
+
+    void start();
+
+    void start_();
+
+    void setRenderCallback(RenderCallback renderCallback);
 };
 
 
