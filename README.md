@@ -225,11 +225,10 @@ Java_com_xl_ffmpeg_MainActivity_stringFromJNI(
 }
 ```
 
-![device](/Users/wyl/Desktop/device.png)
 
 至此，关于ffmpeg 从交叉编译到移植Android 使用流程都跑通了。
 
 有相关问题可以留言交流。
 
-Demo：https://gitee.com/yileiwang/ffmpeg.git
+Demo：https://github.com/WngYilei/ffmpegdemo
 
